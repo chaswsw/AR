@@ -105,9 +105,10 @@ export default function FloorSelectionScreen() {
             style={styles.roomItem}
             onPress={() =>
               router.push({
-                pathname: "/ar-navigation",
+                pathname: "/room-selection",
                 params: { floor: expandedFloor },
-              })
+              });
+
             }
           >
             <Text style={styles.roomTitle}>Sample Room</Text>
