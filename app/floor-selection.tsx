@@ -1,11 +1,13 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  View,
 } from "react-native";
 
 /* MASTER ROOM DATABASE */
@@ -113,43 +115,93 @@ export default function FloorSelectionScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Select a Floor</Text>
+      {/* HERO SECTION */}
+      <View style={styles.hero}>
+        <Image
+          source={require("@/assets/images/hero_banner.png")}
+          style={styles.banner}
+        />
+        <View style={styles.overlay} />
 
-      <TextInput
-        value={search}
-        onChangeText={setSearch}
-        placeholder="Search room..."
-        style={styles.search}
-        onSubmitEditing={handleSearch}
-      />
+        <Text style={styles.heroText}>Where do you want to go?</Text>
 
-      {floors.map((floor) => (
-        <Pressable
-          key={floor.id}
-          style={styles.floorCard}
-          onPress={() =>
-            router.push({
-              pathname: "/room-selection",
-              params: { floor: floor.id },
-            })
-          }
-        >
-          <Text style={styles.floorText}>{floor.name}</Text>
-        </Pressable>
-      ))}
+        {/* SEARCH BAR */}
+        <View style={styles.searchBox}>
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search room..."
+            placeholderTextColor="#777"
+            style={styles.searchInput}
+            onSubmitEditing={handleSearch}
+          />
+        </View>
+      </View>
+
+      {/* FLOOR LIST */}
+      <View style={styles.floorContainer}>
+        {floors.map((floor) => (
+          <Pressable
+            key={floor.id}
+            style={styles.floorCard}
+            onPress={() =>
+              router.push({
+                pathname: "/room-selection",
+                params: { floor: floor.id },
+              })
+            }
+          >
+            <Text style={styles.floorText}>{floor.name}</Text>
+          </Pressable>
+        ))}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
 
-  search: {
-    backgroundColor: "#f2f2f2",
-    padding: 14,
-    borderRadius: 12,
+  hero: {
+    height: 260,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+
+  banner: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: "cover",
+  },
+
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(22,101,52,0.7)",
+  },
+
+  heroText: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 20,
+  },
+
+  searchBox: {
+    backgroundColor: "#fff",
+    width: "85%",
+    padding: 14,
+    borderRadius: 14,
+  },
+
+  searchInput: {
+    fontSize: 14,
+  },
+
+  floorContainer: {
+    padding: 20,
   },
 
   floorCard: {
