@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -86,13 +87,12 @@ export default function FloorSelectionScreen() {
   const [search, setSearch] = useState("");
 
   const floors = [
-    { id: 1, name: "1st Floor" },
-    { id: 2, name: "2nd Floor" },
-    { id: 3, name: "3rd Floor" },
-    { id: 4, name: "4th Floor" },
+    { id: 1, name: "1st Floor", icon: "business-outline" },
+    { id: 2, name: "2nd Floor", icon: "flask-outline" },
+    { id: 3, name: "3rd Floor", icon: "school-outline" },
+    { id: 4, name: "4th Floor", icon: "barbell-outline" },
   ];
 
-  /* GLOBAL SEARCH */
   const handleSearch = () => {
     if (!search.trim()) return;
 
@@ -125,7 +125,6 @@ export default function FloorSelectionScreen() {
 
         <Text style={styles.heroText}>Where do you want to go?</Text>
 
-        {/* SEARCH BAR */}
         <View style={styles.searchBox}>
           <TextInput
             value={search}
@@ -151,6 +150,12 @@ export default function FloorSelectionScreen() {
               })
             }
           >
+            <Ionicons
+              name={floor.icon as any}
+              size={26}
+              color="#fff"
+              style={{ marginBottom: 6 }}
+            />
             <Text style={styles.floorText}>{floor.name}</Text>
           </Pressable>
         ))}
