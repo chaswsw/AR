@@ -1,19 +1,15 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
-  View,
 } from "react-native";
 
-/* 🔥 UPDATED MASTER ROOM LIST (SYNCHRONIZED) */
-const ALL_ROOMS: Record<number, string[]> = {
+/* MASTER ROOM DATABASE */
+export const ROOMS: Record<number, string[]> = {
   1: [
     "Female CR (Female Comfort Room)",
     "Budget Office",
@@ -21,14 +17,14 @@ const ALL_ROOMS: Record<number, string[]> = {
     "Admissions Department / Gender and Development Department",
     "Placement, Alumni and Linkages Department",
     "MISD (Management Information Systems Department)",
-    "ComLab 3 (Computer Laboratory 3)",
+    "Computer Laboratory 3",
     "PMGSD / Laboratory Services & DRRMD",
     "Human Resource Management Department",
     "Quality Management & Planning Department / Data Protection Department",
     "Cashier",
     "Registrar",
-    "ComLab 1 (Computer Laboratory 1)",
-    "ComLab 2 (Computer Laboratory 2)",
+    "Computer Laboratory 1",
+    "Computer Laboratory 2",
     "Entrepreneurship & Business Development Department",
     "Continuing Professional Education Department",
     "Knowledge Management & Innovation Department",
@@ -45,11 +41,11 @@ const ALL_ROOMS: Record<number, string[]> = {
     "College of Engineering",
     "College of Business Administration and Accountancy",
     "Graduate School",
-    "ComLab 4 (Computer Laboratory 4)",
-    "ComLab 5 (Computer Laboratory 5)",
+    "Computer Laboratory 4",
+    "Computer Laboratory 5",
     "Network Laboratory",
     "Male CR (Male Comfort Room)",
-    "ComLab 6 (Computer Laboratory 6)",
+    "Computer Laboratory 6",
     "Microbiology – Parasitology Laboratory",
     "Coed CR (All-Gender Comfort Room)",
     "Ergonomics Laboratory (Rooms 201–202)",
@@ -61,48 +57,52 @@ const ALL_ROOMS: Record<number, string[]> = {
   3: [
     "Room 322",
     "Psychological Laboratory (Rooms 320–321)",
-    "Rooms 319–318",
-    "Rooms 317–316",
-    "Rooms 315–314",
+    "Room 319",
+    "Room 318",
+    "Room 317",
+    "Room 316",
+    "Room 315",
+    "Room 314",
     "Room 313",
     "Electrical Laboratory (Room 312)",
     "Work, Study & Measurement Laboratory (Rooms 311–310)",
-    "Rooms 309–308",
-    "Rooms 307–306",
-    "Rooms 305–304",
-    "Rooms 303–301",
+    "Room 309",
+    "Room 308",
+    "Room 307",
+    "Room 306",
+    "Room 305",
+    "Room 304",
+    "Room 303",
+    "Room 301",
   ],
+
+  4: ["Gym 1", "Gym 2"],
 };
 
 export default function FloorSelectionScreen() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
-  const isTablet = width >= 768;
-
-  const [searchQuery, setSearchQuery] = useState("");
+  const [search, setSearch] = useState("");
 
   const floors = [
-    { id: 1, name: "Ground Floor", icon: "briefcase-outline" },
-    { id: 2, name: "Second Floor", icon: "flask-outline" },
-    { id: 3, name: "Third Floor", icon: "school-outline" },
+    { id: 1, name: "1st Floor" },
+    { id: 2, name: "2nd Floor" },
+    { id: 3, name: "3rd Floor" },
+    { id: 4, name: "4th Floor" },
   ];
 
-  /* 🔍 GLOBAL SEARCH FUNCTION */
+  /* GLOBAL SEARCH */
   const handleSearch = () => {
-    if (!searchQuery.trim()) return;
+    if (!search.trim()) return;
 
-    for (const floor in ALL_ROOMS) {
-      const match = ALL_ROOMS[Number(floor)].find((room) =>
-        room.toLowerCase().includes(searchQuery.toLowerCase()),
+    for (const floor in ROOMS) {
+      const match = ROOMS[Number(floor)].find((room) =>
+        room.toLowerCase().includes(search.toLowerCase()),
       );
 
       if (match) {
         router.push({
           pathname: "/room-selection",
-          params: {
-            floor,
-            search: searchQuery,
-          },
+          params: { floor, search },
         });
         return;
       }
@@ -113,139 +113,56 @@ export default function FloorSelectionScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Ionicons name="location-outline" size={20} color="#166534" />
-          <Text style={styles.headerText}>PNC Main Building</Text>
-        </View>
+      <Text style={styles.title}>Select a Floor</Text>
 
-        <Image
-          source={require("@/assets/images/pnc_logo.png")}
-          style={styles.logo}
-        />
-      </View>
+      <TextInput
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Search room..."
+        style={styles.search}
+        onSubmitEditing={handleSearch}
+      />
 
-      {/* HERO */}
-      <View style={styles.hero}>
-        <Image
-          source={require("@/assets/images/hero_banner.png")}
-          style={styles.banner}
-        />
-        <View style={styles.overlay} />
-
-        <Text style={[styles.heroText, { fontSize: isTablet ? 28 : 22 }]}>
-          Where do you want to go?
-        </Text>
-
-        <View style={styles.searchBox}>
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search room..."
-            placeholderTextColor="#888"
-            style={styles.searchInput}
-            onSubmitEditing={handleSearch}
-          />
-          <Ionicons name="search" size={20} color="#888" />
-        </View>
-      </View>
-
-      {/* FLOOR BUTTONS */}
-      <View style={styles.floorContainer}>
-        {floors.map((floor) => (
-          <Pressable
-            key={floor.id}
-            style={styles.floorCard}
-            onPress={() =>
-              router.push({
-                pathname: "/room-selection",
-                params: { floor: floor.id },
-              })
-            }
-          >
-            <Ionicons name={floor.icon as any} size={26} color="#fff" />
-            <Text style={styles.floorText}>{floor.name}</Text>
-          </Pressable>
-        ))}
-      </View>
+      {floors.map((floor) => (
+        <Pressable
+          key={floor.id}
+          style={styles.floorCard}
+          onPress={() =>
+            router.push({
+              pathname: "/room-selection",
+              params: { floor: floor.id },
+            })
+          }
+        >
+          <Text style={styles.floorText}>{floor.name}</Text>
+        </Pressable>
+      ))}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: "#fff", flex: 1 },
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
 
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 16,
-    alignItems: "center",
-  },
-
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-
-  headerText: { fontWeight: "600" },
-
-  logo: { width: 36, height: 36, resizeMode: "contain" },
-
-  hero: {
-    height: 250,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-  },
-
-  banner: { ...StyleSheet.absoluteFillObject, resizeMode: "cover" },
-
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(22,101,52,0.7)",
-  },
-
-  heroText: {
-    color: "#fff",
-    fontWeight: "bold",
-    textAlign: "center",
+  search: {
+    backgroundColor: "#f2f2f2",
+    padding: 14,
+    borderRadius: 12,
     marginBottom: 20,
-  },
-
-  searchBox: {
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    height: 50,
-    width: "85%",
-  },
-
-  searchInput: { flex: 1 },
-
-  floorContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    padding: 16,
-    marginTop: -30,
   },
 
   floorCard: {
     backgroundColor: "#166534",
-    width: "48%",
-    borderRadius: 18,
-    paddingVertical: 20,
+    padding: 18,
+    borderRadius: 14,
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 14,
   },
 
   floorText: {
     color: "#fff",
+    fontSize: 16,
     fontWeight: "600",
-    marginTop: 6,
   },
 });
