@@ -31,37 +31,49 @@ export default function FloorSelectionScreen() {
     setExpandedFloor(expandedFloor === id ? null : id);
   };
 
+  const goToRoomSelection = () => {
+    if (!expandedFloor) return;
+
+    router.push({
+      pathname: "/room-selection",
+      params: { floor: expandedFloor },
+    });
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Ionicons name="location-outline" size={20} color="#166534" />
           <Text style={styles.headerText}>PNC Main Building</Text>
         </View>
+
         <Image
-          source={require("@/assets/images/pnc_logo.png")} // replace with your logo
+          source={require("@/assets/images/pnc_logo.png")}
           style={styles.logo}
         />
       </View>
 
-      {/* HERO */}
+      {/* HERO SECTION */}
       <View style={styles.hero}>
         <Image
-          source={require("@/assets/images/hero_banner.png")} // replace with your banner
+          source={require("@/assets/images/hero_banner.png")}
           style={styles.banner}
         />
         <View style={styles.overlay} />
+
         <Text style={[styles.heroText, { fontSize: isTablet ? 28 : 22 }]}>
           Where do you want to go?
         </Text>
 
-        {/* SEARCH */}
+        {/* SEARCH BAR */}
         <View style={styles.searchBox}>
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search rooms..."
+            placeholderTextColor="#888"
             style={styles.searchInput}
           />
           <Ionicons name="search" size={20} color="#888" />
@@ -94,25 +106,15 @@ export default function FloorSelectionScreen() {
         ))}
       </View>
 
-      {/* ROOM LIST (Placeholder) */}
+      {/* CONTINUE BUTTON (if floor selected) */}
       {expandedFloor && (
         <View style={styles.roomList}>
           <Text style={styles.roomHeader}>
-            {floors.find((f) => f.id === expandedFloor)?.name} Rooms
+            {floors.find((f) => f.id === expandedFloor)?.name}
           </Text>
 
-          <Pressable
-            style={styles.roomItem}
-            onPress={() =>
-              router.push({
-                pathname: "/room-selection",
-                params: { floor: expandedFloor },
-              });
-
-            }
-          >
-            <Text style={styles.roomTitle}>Sample Room</Text>
-            <Text style={styles.roomDescription}>Room description example</Text>
+          <Pressable style={styles.continueButton} onPress={goToRoomSelection}>
+            <Text style={styles.continueText}>VIEW ROOMS</Text>
           </Pressable>
         </View>
       )}
@@ -143,14 +145,18 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
   },
+
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
+
   headerText: {
     fontWeight: "600",
+    fontSize: 15,
   },
+
   logo: {
     width: 36,
     height: 36,
@@ -163,14 +169,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
   },
+
   banner: {
     ...StyleSheet.absoluteFillObject,
     resizeMode: "cover",
   },
+
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(22,101,52,0.7)",
   },
+
   heroText: {
     color: "#fff",
     fontWeight: "bold",
@@ -182,11 +191,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 48,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    height: 50,
     width: "85%",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
+
   searchInput: {
     flex: 1,
     fontSize: 14,
@@ -217,38 +231,47 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     marginVertical: 6,
+    fontSize: 13,
+    textAlign: "center",
   },
 
   roomList: {
     padding: 16,
   },
+
   roomHeader: {
     fontWeight: "bold",
-    marginBottom: 12,
+    fontSize: 18,
+    marginBottom: 14,
   },
-  roomItem: {
-    backgroundColor: "#f5f5f5",
-    padding: 14,
-    borderRadius: 12,
+
+  continueButton: {
+    backgroundColor: "#166534",
+    paddingVertical: 16,
+    borderRadius: 14,
+    alignItems: "center",
   },
-  roomTitle: {
-    fontWeight: "600",
-  },
-  roomDescription: {
-    fontSize: 12,
-    color: "#555",
+
+  continueText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 
   footer: {
     padding: 16,
     marginTop: 20,
   },
+
   footerTitle: {
     fontWeight: "bold",
     marginBottom: 6,
+    fontSize: 16,
   },
+
   footerText: {
     fontSize: 13,
     color: "#555",
+    lineHeight: 18,
   },
 });

@@ -6,6 +6,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    View,
 } from "react-native";
 
 type Room = {
@@ -15,7 +16,6 @@ type Room = {
 
 const ROOMS: Record<number, Room[]> = {
   1: [
-    // RIGHT SIDE
     { name: "Female CR (Female Comfort Room)", side: "RIGHT" },
     { name: "Budget Office", side: "RIGHT" },
     {
@@ -30,7 +30,6 @@ const ROOMS: Record<number, Room[]> = {
     { name: "MISD (Management Information Systems Department)", side: "RIGHT" },
     { name: "ComLab 3 (Computer Laboratory 3)", side: "RIGHT" },
 
-    // LEFT SIDE
     { name: "PMGSD / Laboratory Services & DRRMD", side: "LEFT" },
     { name: "Human Resource Management Department", side: "LEFT" },
     {
@@ -54,7 +53,6 @@ const ROOMS: Record<number, Room[]> = {
   ],
 
   2: [
-    // LEFT
     { name: "College of Health and Allied Sciences", side: "LEFT" },
     { name: "College of Arts and Sciences", side: "LEFT" },
     { name: "College of Computing Studies", side: "LEFT" },
@@ -68,7 +66,6 @@ const ROOMS: Record<number, Room[]> = {
     { name: "ComLab 5 (Computer Laboratory 5)", side: "LEFT" },
     { name: "Network Laboratory", side: "LEFT" },
 
-    // RIGHT
     { name: "Male CR (Male Comfort Room)", side: "RIGHT" },
     { name: "ComLab 6 (Computer Laboratory 6)", side: "RIGHT" },
     { name: "Microbiology – Parasitology Laboratory", side: "RIGHT" },
@@ -101,6 +98,7 @@ const ROOMS: Record<number, Room[]> = {
 export default function RoomSelectionScreen() {
   const router = useRouter();
   const { floor } = useLocalSearchParams();
+
   const [search, setSearch] = useState("");
 
   const floorNumber = Number(floor);
@@ -112,36 +110,57 @@ export default function RoomSelectionScreen() {
     );
   }, [search, rooms]);
 
+  const groupedRooms = {
+    LEFT: filteredRooms.filter((r) => r.side === "LEFT"),
+    RIGHT: filteredRooms.filter((r) => r.side === "RIGHT"),
+  };
+
+  if (!rooms.length) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>Invalid Floor Selected</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Select a Room</Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <Text style={styles.title}>Floor {floorNumber}</Text>
 
       <TextInput
         placeholder="Search room..."
         value={search}
         onChangeText={setSearch}
         style={styles.search}
+        placeholderTextColor="#777"
       />
 
-      {filteredRooms.map((room, index) => (
-        <Pressable
-          key={index}
-          style={styles.roomCard}
-          onPress={() =>
-            router.push({
-              pathname: "/ar-navigation",
-              params: {
-                floor: floorNumber,
-                room: room.name,
-                side: room.side,
-              },
-            })
-          }
-        >
-          <Text style={styles.roomText}>{room.name}</Text>
-          <Text style={styles.sideText}>{room.side}</Text>
-        </Pressable>
-      ))}
+      {["LEFT", "RIGHT"].map((side) =>
+        groupedRooms[side as "LEFT" | "RIGHT"].length > 0 ? (
+          <View key={side} style={styles.sideSection}>
+            <Text style={styles.sideHeader}>{side}</Text>
+
+            {groupedRooms[side as "LEFT" | "RIGHT"].map((room, index) => (
+              <Pressable
+                key={index}
+                style={styles.roomCard}
+                onPress={() =>
+                  router.push({
+                    pathname: "/ar-navigation",
+                    params: {
+                      floor: floorNumber,
+                      room: room.name,
+                      side: room.side,
+                    },
+                  })
+                }
+              >
+                <Text style={styles.roomText}>{room.name}</Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null,
+      )}
 
       {filteredRooms.length === 0 && (
         <Text style={styles.noResult}>No rooms found.</Text>
@@ -151,21 +170,64 @@ export default function RoomSelectionScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#ffffff",
+  },
+
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#166534",
+  },
+
   search: {
     backgroundColor: "#f2f2f2",
-    padding: 12,
-    borderRadius: 10,
+    padding: 14,
+    borderRadius: 12,
     marginBottom: 20,
+    fontSize: 14,
   },
+
+  sideSection: {
+    marginBottom: 24,
+  },
+
+  sideHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 12,
+    color: "#14532d",
+  },
+
   roomCard: {
     backgroundColor: "#e8f5e9",
     padding: 14,
     borderRadius: 12,
     marginBottom: 12,
   },
-  roomText: { fontSize: 15, fontWeight: "500" },
-  sideText: { fontSize: 12, color: "#555", marginTop: 4 },
-  noResult: { textAlign: "center", marginTop: 20 },
+
+  roomText: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+
+  noResult: {
+    textAlign: "center",
+    marginTop: 30,
+    color: "#777",
+  },
+
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  errorText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 });
